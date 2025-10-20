@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IoT Botnet Detection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            background: #ffffff10;
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px 40px;
+            width: 420px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00e5ff;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #f8f9fa;
+        }
+
+        input, select {
+            padding: 10px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            background: #ffffffcc;
+            color: #333;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .benign { background-color: #d4edda; color: #155724; }
+        .attack { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>IoT Botnet Detection</h2>
+        <form action="/predict" method="post">
+            <label>Duration:</label>
+            <input type="number" name="duration" step="any" required>
+
+            <label>Source Bytes:</label>
+            <input type="number" name="src_bytes" step="any" required>
+
+            <label>Destination Bytes:</label>
+            <input type="number" name="dst_bytes" step="any" required>
+
+            <label>Source Packets:</label>
+            <input type="number" name="src_pkts" step="any" required>
+
+            <label>Destination Packets:</label>
+            <input type="number" name="dst_pkts" step="any" required>
+
+            <label>Protocol:</label>
+            <select name="proto" required>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+                <option value="icmp">ICMP</option>
+            </select>
+
+            <label>Service:</label>
+            <select name="service" required>
+                <option value="http">HTTP</option>
+                <option value="https">HTTPS</option>
+                <option value="dns">DNS</option>
+                <option value="ftp">FTP</option>
+                <option value="-">- (none)</option>
+            </select>
+
+            <label>Connection State:</label>
+            <select name="conn_state" required>
+                <option value="sf">SF</option>
+                <option value="s0">S0</option>
+                <option value="rej">REJ</option>
+            </select>
+
+            <label>Missed Bytes:</label>
+            <input type="number" name="missed_bytes" step="any" required>
+
+            <label>HTTP Request Body Length:</label>
+            <input type="number" name="http_request_body_len" step="any" required>
+
+            <label>HTTP Response Body Length:</label>
+            <input type="number" name="http_response_body_len" step="any" required>
+
+            <label>HTTP Status Code:</label>
+            <input type="number" name="http_status_code" step="any" required>
+
+            <button type="submit">🔍 Detect</button>
+        </form>
+
+        {% if prediction %}
+            {% if "BENIGN" in prediction %}
+                <div class="result benign">✅ Prediction: {{ prediction }}</div>
+            {% elif "BOTNET" in prediction %}
+                <div class="result attack">🚨 Prediction: {{ prediction }}</div>
+            {% else %}
+                <div class="result warning">⚠️ {{ prediction }}</div>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
